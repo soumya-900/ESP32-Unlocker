@@ -1,0 +1,34 @@
+name: Build ESP32 Firmware
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repo
+        uses: actions/checkout@v3
+
+      - name: Compile Sketch
+        uses: arduino/compile-sketches@v1
+        with:
+          fqbn: esp32:esp32:esp32
+          platforms: |
+            - name: esp32:esp32
+              source-url: https://raw.githubusercontent.com/espressif/arduino-esp32/gh-pages/package_esp32_index.json
+              version: 2.0.14
+          libraries: |
+            - name: NimBLE-Arduino
+            - name: ESP32 BLE Keyboard
+          sketch-paths: |
+            - ./ESP32_Unlocker
+
+      - name: Upload Bin File
+        uses: actions/upload-artifact@v3
+        with:
+          name: ESP32-Firmware
+          path: build
+          
